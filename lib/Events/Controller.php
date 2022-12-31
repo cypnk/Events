@@ -153,9 +153,9 @@ class Controller {
 	}
 	
 	/**
+	 *  Add runnable event to current list
 	 *  
-	 *  
-	 *  @param string	$name	Description for $name
+	 *  @param string	$name	Unique event name
 	 */
 	public function addEvent( string $name ) {
 		if ( \array_key_exists( $name, $this->events ) ) {
@@ -166,10 +166,10 @@ class Controller {
 	}
 	
 	/**
+	 *  Run selected event with set of optional parameters
 	 *  
-	 *  
-	 *  @param string	$name		Description for $name
-	 *  @param array	$params		Description for $params
+	 *  @param string	$name		Event name
+	 *  @param array	$params		Optional list of parameters
 	 */
 	public function run( string $name, ?array $params = null ) {
 		if ( \array_key_exists( $name, $this->events ) ) {

@@ -166,10 +166,10 @@ class Controller {
 	}
 	
 	/**
-	 *  Run selected event with set of optional parameters
+	 *  Run handlers in given event
 	 *  
-	 *  @param string	$name		Event name
-	 *  @param array	$params		Optional list of parameters
+	 *  @param string	$name		Unique event name
+	 *  @param array	$params		Runtime parameters
 	 */
 	public function run( string $name, ?array $params = null ) {
 		if ( \array_key_exists( $name, $this->events ) ) {

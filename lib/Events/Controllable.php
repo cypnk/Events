@@ -5,12 +5,6 @@ namespace Events;
 abstract class Controllable {
 	
 	/**
-	 *  Current event name
-	 *  @var string
-	 */
-	protected readonly string $name;
-	
-	/**
 	 *  Main event controller
 	 *  @var \Events\Controller
 	 */
@@ -68,14 +62,6 @@ abstract class Controllable {
 				return $this->_params;
 		}
 		return null;
-	}
-	
-	/**
-	 *  Current controllable's name (read-only)
-	 *  @return string
-	 */
-	public function getName() : string {
-		return $this->name ?? '';
 	}
 	
 	/** 

@@ -43,6 +43,15 @@ class Event implements \SplSubject extends NamedControllable  {
 	}
 	
 	/**
+	 *  Return notify results from handlers
+	 *  
+	 *  @return array
+	 */
+	public function getOutput() : array {
+		return $this->output;
+	}
+	
+	/**
 	 *  Get handler by name if currently registered
 	 *  
 	 *  @param string	$name	Raw handler name

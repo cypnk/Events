@@ -4,6 +4,12 @@ namespace Events;
 
 abstract class NamedControllable extends Controllable {
 	/**
+	 *  Current event name
+	 *  @var string
+	 */
+	protected readonly string $name;
+	
+	/**
 	 *  Create new runnable with controller and unique name
 	 *  
 	 *  @param \Events\Controller	$ctrl	Event controller
@@ -15,6 +21,14 @@ abstract class NamedControllable extends Controllable {
 	) {
 		$this->name		= $name;
 		parent::__construct( $ctrl );
+	}
+	
+	/**
+	 *  Current controllable's name (read-only)
+	 *  @return string
+	 */
+	public function getName() : string {
+		return $this->name ?? '';
 	}
 }
 

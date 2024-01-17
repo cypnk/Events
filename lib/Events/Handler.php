@@ -2,7 +2,7 @@
 
 namespace Events;
 
-class Handler implements \SplObserver extends Controllable {
+class Handler extends Controllable implements \SplObserver {
 	
 	/**
 	 *  Handler execution priority

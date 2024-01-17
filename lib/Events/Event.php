@@ -2,7 +2,7 @@
 
 namespace Events;
 
-class Event implements \SplSubject extends NamedControllable  {
+class Event extends NamedControllable implements \SplSubject {
 	
 	/**
 	 *  Registered handlers

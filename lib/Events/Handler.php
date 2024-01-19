@@ -17,12 +17,6 @@ class Handler extends Controllable implements \SplObserver {
 	protected bool $fixed_priority	= false;
 	
 	/**
-	 *  Stored handler output per event
-	 *  @var array
-	 */
-	protected array $output	= [];
-	
-	/**
 	 *  Create handler with given controller and optional start priority
 	 *  
 	 *  @param \Notes\Controller	$ctrl	Main event controller
@@ -59,20 +53,11 @@ class Handler extends Controllable implements \SplObserver {
 	}
 	
 	/**
-	 *  Get preset or post-execution handler output
-	 *  
-	 *  @return array
-	 */
-	public function getOutput( string $name ) : array {
-		return $this->output[$name] ?? [];
-	}
-	
-	/**
 	 *  Accept notification from event
 	 *  
 	 *  @param SplSubject	$event Description for $event
 	 *  @param array	$params Description for $params
 	 */
-	public function notify( \SplSubject $event, ?array $params = null ) {}
+	public function update( \SplSubject $event, ?array $params = null ) {}
 }
 

@@ -5,15 +5,27 @@ namespace Events;
 abstract class Controllable {
 	
 	/**
-	 *  Main event controller
-	 *  @var \Events\Controller
+	 *  Unique identifier
+	 *  @var int
 	 */
-	protected readonly object $controller;
+	protected int $_id;
 	
 	/**
-	 *  Event parameters on execution
+	 *  Settable parameters on execution
 	 */
 	protected array $_params	= [];
+	
+	/**
+	 *  Stored handler output per event
+	 *  @var array
+	 */
+	protected array $output		= [];
+	
+	/**
+	 *  Controllable name
+	 *  @var string
+	 */
+	public readonly string $name;
 	
 	/**
 	 *  Error storage
@@ -28,40 +40,64 @@ abstract class Controllable {
 	protected array $notices	= [];
 	
 	/**
-	 *  Create new runnable with controller
-	 *  
-	 *  @param \Events\Controller	$ctrl	Event controller
+	 *  Main event controller
+	 *  @var \Events\Controller
 	 */
-	public function __construct( \Events\Controller	$ctrl ) {
-		$this->controller	= $ctrl;
+	protected readonly Controller $controller;
+	
+	/**
+	 *  Create new runnable with Controller and unique name
+	 *  
+	 *  @param Controller	$_ctrl		Event Controller
+	 *  @param string	$_name		Current observable's name
+	 */
+	public function __construct( Controller $_ctrl, ?string $_name = null ) {
+		$this->controller	= $_ctrl;
+		$this->name		= $_name ?? static::class;
 	}
 	
 	public function __destruct() {
 		foreach ( $this->errors as $e ) {
-			\messages( 'error', \get_called_class() . ' ' . $e );
+			$this->controller->messages( 'error', static::class . ' ' . $e );
 		}
-	}	
-	public function __set( $name, $value ) {
-		switch ( $name ) {
+		
+		foreach ( $this->notices as $e ) {
+			$this->controller->messages( 'notice', static::class . ' ' . $e );
+		}
+	}
+	
+	public function __set( $_name, $_value ) {
+		switch ( $_name ) {
 			case 'id':
-				$this->_id = ( int ) $value;
+				// Set once
+				if ( isset( $this->_id ) ) {
+					return;
+				}
+				$this->_id = ( int ) $_value;
 				break;
 			
 			case 'params':
 				$this->_params = 
-				static::formatSettings( $value );
+				static::formatSettings( $_value );
 		}
 	}
 	
-	public function __get( $name ) {
-		switch ( $name ) {
-			case 'id':
-				return $this->_id ?? 0;
-			
-			case 'params':
-				return $this->_params;
-		}
-		return null;
+	public function __get( $_name ) {
+		return 
+		match( $_name ) {
+			'id'		=> $this->_id ?? 0,
+			'params'	=> $this->_params,
+			default		=> null
+		};
+	}
+	
+	/**
+	 *  Preset self-identifier
+	 *  
+	 *  @return string
+	 */
+	public function getName() : string {
+		return $this->name;
 	}
 	
 	/** 
@@ -95,6 +131,15 @@ abstract class Controllable {
 	}
 	
 	/**
+	 *  Return notify results from execution
+	 *  
+	 *  @return array
+	 */
+	public function getOutput( string $name ) : array {
+		return $this->output[$name] ?? [];
+	}
+	
+	/**
 	 *  Get running errors
 	 *  
 	 *  @return array
@@ -111,6 +156,7 @@ abstract class Controllable {
 	public function getNotices() : array {
 		return $this->notices;
 	}
+	
 	/**
 	 *  Helper to detect and parse a 'settings' data type
 	 *  
@@ -204,5 +250,4 @@ abstract class Controllable {
 		return $out;
 	}
 }
-
 

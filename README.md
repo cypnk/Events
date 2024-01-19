@@ -10,6 +10,6 @@ Contents:
 
 Usage:
 * Give write and execute permissions to /data (chmod 0755 on unix-like systems)
-* Extend Events/Event and Events/Handler, or Events/Controllable and Events/NamedControllable as needed 
+* Extend Events/Event, Events/Handler, and Events/Controllable as needed 
 * Include bootstrap.php in the index file or the script being executed and add other source directories in the class-loader, if needed
 

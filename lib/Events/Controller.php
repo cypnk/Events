@@ -52,12 +52,12 @@ class Controller {
 	protected array $logs		= [];
 	
 	public function __construct( 
-		string	$_write, 
+		?string	$_write		= null, 
 		?string	$_errfile	= null,
 		?string	$_verrfile	= null,
 		?string $_notefile	= null,
 	) {
-		$this->writable	= \rtrim( $_write, '/\\' ) . '/';
+		$this->writable	= \rtrim( $_write ?? \WRITABLE, '/\\' ) . '/';
 		
 		$this->errfile	= $_errfile	?? 'errors.log';
 		$this->verrfile	= $_verrfile	?? 'visitor_errors.log';

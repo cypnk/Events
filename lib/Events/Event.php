@@ -2,7 +2,7 @@
 
 namespace Events;
 
-class Event extends NamedControllable implements \SplSubject {
+class Event extends Controllable implements \SplSubject {
 	
 	/**
 	 *  Registered handlers
@@ -10,25 +10,30 @@ class Event extends NamedControllable implements \SplSubject {
 	 */
 	protected array $handlers	= [];
 	
-	
 	/**
-	 *  Stored event data
-	 *  @var array
+	 *  Check if the handler was already added to updates list
+	 *  
+	 *  @param Handler $handler Event handler
+	 *  @return bool
 	 */
-	protected array $output	= [];
+	public function hasHandler( Handler $handler ) : bool {
+		return 
+		\array_key_exists( $handler->getName(), $this->handlers );
+	}
 	
 	/**
 	 *  Add a handler to this event
 	 *  
 	 *  @param \SplObserver	$handler	Event handler
+	 *  @param int		$priority	Preset execution priority
 	 */
-	public function attach( \SplObserver $handler ) {
-		$name = $handler->getName();
-		if ( \array_key_exists( $name, $this->handlers ) ) {
+	public function attach( \SplObserver $handler, ?int $priority = null ) {
+		if ( $this->hasHandler( $handler ) ) {
 			return;
 		}
 		
-		$this->handlers[$name] = [ $handler->getPriority(), $handler ];
+		$this->handlers[$handler->getName()] = 
+		[ $priority ?? $handler->getPriority(), $handler ];
 	}
 	
 	/**
@@ -37,30 +42,11 @@ class Event extends NamedControllable implements \SplSubject {
 	 *  @param \SplObserver	$handler	Event handler
 	 */
 	public function detach( \SplObserver $handler ) {
-		if ( \array_key_exists( $handler->getName(), $this->handlers ) ) {
-			unset( $this->handlers[$name] );
+		if ( !$this->hasHandler( $handler ) ) {
+			return;
 		}
-	}
-	
-	/**
-	 *  Return notify results from handlers
-	 *  
-	 *  @return array
-	 */
-	public function getOutput() : array {
-		return $this->output;
-	}
-	
-	/**
-	 *  Get handler by name if currently registered
-	 *  
-	 *  @param string	$name	Raw handler name
-	 *  @return mixed 
-	 */
-	public function getHandler( string $name ) {
-		return 
-		\array_key_exists( $name, $this->handlers ) ? 
-			$this->handlers[$name] : null;
+		
+		unset( $this->handlers[$handler->getName()] );
 	}
 	
 	/**
@@ -73,18 +59,31 @@ class Event extends NamedControllable implements \SplSubject {
 	}
 	
 	/**
-	 *  Reorder handler priority
+	 *  Reset handler priority within current list
 	 *  
-	 *  @param object	$handler	Event handler
-	 *  @param int		$priority	New handler priority
+	 *  @param Handler	$handler	Given event handler
+	 *  @param int		$priority	New execution priority
 	 */
-	public function priority( Handler $handler, int $priority ) {
-		$name = $handler->getName();
-		if ( \array_key_exists( $name, $this->handlers ) ) {
-			$this->handlers[$name][0] = $priority;
+	public function priority( Handler $handler, int $priority ) : void {
+		if ( !$this->hasHandler( $handler ) ) {
+			return;
 		}
+		
+		$this->handlers[$handler->getName()] = [ $priority, $handler ];
 		$this->sortHandlers();
 	}
+	
+	/**
+	 *  Get handler by name if currently registered
+	 *  
+	 *  @param string	$name	Raw handler name
+	 *  @return array
+	 */
+	public function getHandler( string $name ) : array {
+		return 
+		\array_key_exists( $name, $this->handlers ) ? 
+			$this->handlers[$name] : null;
+ 	}
 	
 	/**
 	 *  Run event and notify handlers
@@ -101,15 +100,16 @@ class Event extends NamedControllable implements \SplSubject {
 		// Sort
 		$this->sortHandlers();
 		
-		foreach ( $this->handlers as $h ) {
-			$h[1]->update( $this, $this->params );
+		$this->output[$this->name] ??= [];
+		
+		foreach ( $this->handlers as $k => $v ) {
+			$h[1]->update( $this, $params );
 			
-			$this->output = 
+			$this->output[$this->name] = 
 			\array_merge( 
-				$this->output, 
-				$h[1]->data( $this->name ) ?? []
+				$this->output[$this->name], 
+				$h[1]->getOutput( $this->name ) ?? []
 			);
 		}
 	}
 }
-
